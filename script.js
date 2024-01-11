@@ -1,4 +1,3 @@
-
 const container = document.querySelector(".container");
 
 // Clonación de imagenes que se pierden el foco
@@ -43,7 +42,14 @@ function observeVisibility(image) {
   observer.observe(image);
 }
 
-function onImageClick(element) {
+function removeAttr(element, attr) {
+  var miBoton = document.getElementById('miBoton');
+  miBoton.removeAttribute('onclick');
+}
+
+function onImageHover(element) {
+  const contentElement = element.querySelector(".content");
+
   // Busca la imagen dentro del elemento clickeado
   const imgElement = element.querySelector(".gallery-image");
 
@@ -53,6 +59,8 @@ function onImageClick(element) {
   const images = document.querySelectorAll(".image-wrapper");
   images.forEach((img) => {
     img.classList.remove("scroll-animation");
+    // img.removeEventListener("mouseenter", onImageHover);
+    img.removeAttribute("onmouseenter");
   });
 
   const imageContainer = document.getElementById("imageContainer");
@@ -65,33 +73,53 @@ function onImageClick(element) {
     left: offset,
     behavior: "smooth",
   });
-
+ 
   setTimeout(() => {
     imgElement.classList.add("fade-out");
     element.classList.add("scaler");
     content.classList.add("fade-in");
+    contentElement.style.zIndex = 1;
   }, 2000);
 }
 
 function closeButtonClicked(element) {
-  const contentContainer = element.parentNode;
-  const parentContainer = contentContainer.parentNode;
+  const contentElement = element.parentNode;
+  // contentElement.classList.add("z-index-n1");
+  
+  const parentContainer = contentElement.parentNode;
 
   // Busca la imagen dentro del elemento padre del contenedor de contenido
-  const imgElement = contentContainer.previousElementSibling;
+  const imgElement = contentElement.previousElementSibling;
+  
   setTimeout(() => {
     
     imgElement.classList.remove("fade-out");
     imgElement.classList.add("fade-in");
     parentContainer.classList.remove("scaler");
     parentContainer.classList.add("revertScaler");
-    contentContainer.classList.remove("fade-in");    
-    contentContainer.style.zIndex = -1;
+    
+    contentElement.style.zIndex = -1;
 
     const images = document.querySelectorAll(".image-wrapper");
+
     images.forEach((img) => {
-      img.classList.add("scroll-animation");
+      // img.classList.add("scroll-animation");
+      // if (img.hasAttribute("onmouseenter")) 
+      // {
+      //   console.log("img", img);
+      //   img.addEventListener("mouseenter", function () {
+      //     onImageClick(img);
+      //   });
+      // }
+      img.setAttribute("onmouseenter", "onImageHover(this)");
     });
+
+    setTimeout(() => {
+      parentContainer.classList.remove("revertScaler");
+      contentElement.classList.remove("fade-in");  
+      parentContainer.classList.remove("fade-in");
+      imgElement.classList.remove("fade-in");
+    }, 1500)
 
   }, 2000);
   
